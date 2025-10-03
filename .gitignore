@@ -5,5 +5,5 @@ nohup.out
 *.pyc
 *.pyo
 *.pyd
-
+*.log
 .venv/
