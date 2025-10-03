@@ -31,6 +31,18 @@ Para rodar no boot:
 
 * Instale Termux:Boot e coloque o script em `~/.termux/boot/`
 
+## Ciclo de vida
+
+```bash
+bin/sysmon → sysmon/main.py → gather() → chama todos collectors → junta dict
+   ↓
+format_payload() → monta texto
+   ↓
+Notifier.update() → termux-notification
+   ↓
+loop infinito (sleep INTERVAL)
+```
+
 ## Licença 
 
 Usando [GPL3](LICENSE)
