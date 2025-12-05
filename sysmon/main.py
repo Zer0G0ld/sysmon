@@ -5,6 +5,11 @@ Entry point for SysMon Termux (no root required).
 
 import time
 import sys
+import os
+
+# Adiciona diretório atual ao path para importações funcionarem
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from sysmon.config import INTERVAL, NOTIF_ID
 from sysmon.collectors import battery, telephony, memory, storage, cpu, location
 from sysmon.notifier import Notifier
@@ -19,7 +24,7 @@ def gather():
     data.update(memory.read())
     data.update(storage.read())
     data.update(cpu.read())   # cpu may be approximate
-    data.uodate(location())
+    data.update(location.read())  # CORRIGIDO: era data.uodate(location())
     return data
 
 def format_payload(d: dict):
@@ -28,8 +33,9 @@ def format_payload(d: dict):
     big = []
     big.append(f"Bateria: {d.get('battery_pct','?')}% ({d.get('battery_status','?')}) Temp: {d.get('battery_temp','?')}°C")
     big.append(f"Operadora: {d.get('network','?')} · SIM: {d.get('sim_state','?')}")
-    big.append(f"Memória: {d.get('mem_pct','?')}% ({d.get('mem_used_kb','?')} KB used)")
+    big.append(f"Memória: {d.get('mem_pct','?')}% ({d.get('mem_used_mb','?')} MB used)")
     big.append(f"Armazenamento: {d.get('disk','?')}")
+    big.append(f"Local: {d.get('location','Não disponível')}")
     big.append(f"Atualizado: {time.strftime('%Y-%m-%d %H:%M:%S')}")
     content = "\n".join(big)
     return title, short, content
@@ -45,9 +51,9 @@ def main():
             notifier.update(title=title, short=short, content=big)
         except Exception as e:
             # não quebrar o loop; reporta em notificação curta
+            log(f"Erro: {e}")
             notifier.update(title="SysMon — erro", short=str(e)[:120], content=str(e))
         time.sleep(INTERVAL)
 
 if __name__ == "__main__":
     main()
-
