@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "SysMon",
+    "version": "2.0",
+    "update_interval": 10
+  },
+  "metrics": {
+    "cpu": true,
+    "memory": true,
+    "battery": true,
+    "storage": true,
+    "temperature": true
+  }
+}
